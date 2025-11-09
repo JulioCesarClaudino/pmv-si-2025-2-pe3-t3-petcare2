@@ -1,0 +1,40 @@
+.button {
+  padding: 15px;
+  border: none;
+  border-radius: 15px;
+  background-color: #0082fc;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #0058aa;
+}
+
+.container {
+  padding: 15px;
+}
+
+.title {
+  text-align: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #30363d;
+  color: rgb(0, 0, 0);
+}
+
+.input::placeholder {
+  color: #a0a0a0;
+  opacity: 1; 
+}
+
+.input:focus {
+  border-color: #58a6ff;
+  outline: none;
+}
+
