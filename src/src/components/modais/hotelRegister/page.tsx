@@ -1,4 +1,6 @@
+"use client";
 import { IoMdAdd } from "react-icons/io";
+import { useState, useRef, Dispatch, SetStateAction } from "react";
 import {
   Dialog,
   DialogClose,
@@ -8,34 +10,121 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { HotelRepo } from "@/utils/localstorage";
 import styles from "./page.module.css";
 
-export default function HotelRegister() {
+interface HotelRegisterProps {
+  att: boolean;
+  setAtt: Dispatch<SetStateAction<boolean>>;
+  edit: string;
+}
+
+export default function HotelRegister({
+  att,
+  setAtt,
+  edit,
+}: HotelRegisterProps) {
+  const [open, setOpen] = useState(false);
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [base64data, setBase64data] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [address, setAddress] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const form = new FormData(e.currentTarget);
     const data = {
-      name: form.get("name"),
-      address: form.get("address"),
-      capacity: form.get("capacity"),
+      name,
+      address,
+      description,
+      url: base64data,
     };
 
-    console.log(data);
+    if (edit) {
+      HotelRepo.update(edit, data);
+    } else {
+      HotelRepo.create(data);
+    }
+
+    setAtt(!att);
+    setOpen(false);
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (files && files[0]) {
+      const file = files[0];
+      const url = URL.createObjectURL(file);
+      setFileUrl(url);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        try {
+          setBase64data(reader.result as string);
+        } catch (err) {
+          console.error("Falha ao selecionar arquivo", err);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function handleButtonClick() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+
+  function editButtonClick() {
+    const hotel = HotelRepo.get(edit);
+    if (hotel) {
+      setName(hotel.name);
+      setAddress(hotel.address || "");
+      setDescription(hotel.description);
+      setFileUrl(hotel.url);
+      setBase64data(hotel.url);
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className={styles.button}>
-          <IoMdAdd size="15" />
-        </button>
+        {edit ? (
+          <button className={styles.button} onClick={editButtonClick}>
+            Editar
+          </button>
+        ) : (
+          <button className={styles.button}>
+            <IoMdAdd size="15" />
+          </button>
+        )}
       </DialogTrigger>
-      <DialogContent className={styles.container}>
+      <DialogContent aria-describedby={undefined} className={styles.container}>
         <form onSubmit={handleLogin}>
           <DialogHeader className={styles.title}>
             <DialogTitle>Cadastro de hotel</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4">
+            <div className="grid gap-3" style={{ justifyContent: "center" }}>
+              <button
+                className={styles.buttonFileInput}
+                type="button"
+                onClick={handleButtonClick}
+              >
+                {fileUrl ? (
+                  <img className={styles.img} src={fileUrl} alt="Preview" />
+                ) : (
+                  "Selecionar arquivo"
+                )}
+              </button>
+              <input
+                className={styles.fileInput}
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+              />
+            </div>
             <div className="grid gap-3">
               <DialogTitle>Name</DialogTitle>
               <input
@@ -43,6 +132,8 @@ export default function HotelRegister() {
                 type="text"
                 name="name"
                 placeholder="Nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
               />
             </div>
@@ -53,16 +144,20 @@ export default function HotelRegister() {
                 type="text"
                 name="address"
                 placeholder="endereço"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 required
               />
             </div>
             <div className="grid gap-3">
-              <DialogTitle>Capacidade</DialogTitle>
+              <DialogTitle>Descrição</DialogTitle>
               <input
                 className={styles.input}
                 type="text"
-                name="capacity"
-                placeholder="Capacidade"
+                name="description"
+                placeholder="Descrição"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 required
               />
             </div>

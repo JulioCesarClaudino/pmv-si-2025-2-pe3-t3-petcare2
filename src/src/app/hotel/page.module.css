@@ -57,12 +57,12 @@
   padding: 15px;
   border: none;
   border-radius: 15px;
-  background-color: #0082fc;
+  background-color: #d10000dc;
   color: white;
   font-weight: bold;
   cursor: pointer;
 }
 
 .button:hover {
-  background-color: #0058aa;
+  background-color: #9b0000dc;
 }

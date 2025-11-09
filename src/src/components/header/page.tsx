@@ -39,6 +39,9 @@ export function Header() {
         <button onClick={() => handleClick("/")} className={styles.button}>
           Home
         </button>
+        <button onClick={() => handleClick("/dashboard")} className={styles.button}>
+          Dashboard
+        </button>
         <button onClick={() => handleClick("/pets")} className={styles.button}>
           Animais de estimação
         </button>

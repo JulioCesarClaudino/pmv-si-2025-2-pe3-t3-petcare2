@@ -1,17 +1,23 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { logout } from "@/lib/auth";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/header/page";
-import { IoMdAdd } from "react-icons/io";
+import { Hotel } from "@/utils/models";
+import { HotelRepo } from "@/utils/localstorage";
 import styles from "./page.module.css";
 import HotelRegister from "@/components/modais/hotelRegister/page";
 
 export default function HomePage() {
-  const router = useRouter();
+  const [hotels, setHotels] = useState<Array<Hotel>>([]);
+  const [att, setAtt] = useState<boolean>(false);
 
-  function handleLogout() {
-    logout();
-    router.push("/login");
+  useEffect(() => {
+    const stored = HotelRepo.list();
+    setHotels(stored);
+  }, [att]);
+
+  function deletButtonClick(id: string) {
+    HotelRepo.remove(id);
+    setAtt(!att);
   }
 
   return (
@@ -20,47 +26,33 @@ export default function HomePage() {
       <div className={styles.container}>
         <div className={styles.title}>
           <h1>Registro de hotéis</h1>
-          <HotelRegister />
+          <HotelRegister att={att} setAtt={setAtt} />
         </div>
 
         <div className={styles.containerBox}>
-          <div className={styles.box}>
-            <img
-              className={styles.img}
-              src="/img/banner1.png"
-              alt="Sem imagem"
-              width={200}
-              height={200}
-            />
-            <div className={styles.content}>
-              <h1>Hotel Belo</h1>
-              <p>
-                Monitoramento 24h por equipe treinada e veterinário de plantão.
-                Ambiente 100% pet-friendly com cercas e portões de segurança
-                dupla.
-              </p>
-              <button className={styles.button}>Editar</button>
-            </div>
-          </div>
-
-          <div className={styles.box}>
-            <img
-              className={styles.img}
-              src="/img/banner2.jpeg"
-              alt="Sem imagem"
-              width={200}
-              height={200}
-            />
-            <div className={styles.content}>
-              <h1>Hotel Varginha</h1>
-              <p>
-                Quartos individuais e climatizados (ou confortáveis baias
-                separadas), com limpeza e higienização diária rigorosa, evitando
-                qualquer risco de contaminação.
-              </p>
-              <button className={styles.button}>Editar</button>
-            </div>
-          </div>
+          {hotels.length > 0 &&
+            hotels.map((hotel) => (
+              <div key={hotel.id} className={styles.box}>
+                <img
+                  className={styles.img}
+                  src={hotel.url}
+                  alt="Sem imagem"
+                  width={200}
+                  height={200}
+                />
+                <div className={styles.content}>
+                  <h1>{hotel.name}</h1>
+                  <p>{hotel.description}</p>
+                  <HotelRegister att={att} setAtt={setAtt} edit={hotel.id} />
+                  <button
+                    onClick={() => deletButtonClick(hotel.id)}
+                    className={styles.button}
+                  >
+                    Excluir
+                  </button>
+                </div>
+              </div>
+            ))}
         </div>
       </div>
     </div>

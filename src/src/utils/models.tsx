@@ -31,6 +31,7 @@ export interface Pet {
   species: string;
   age?: number | null;
   obs?: string | null;
+  url: string;
   createdAt: string;
   updatedAt?: string | null;
 }
@@ -40,6 +41,8 @@ export interface Hotel {
   name: string;
   address?: string | null;
   capacity?: number | null;
+  description: string;
+  url: string;
   createdAt: string;
   updatedAt?: string | null;
 }

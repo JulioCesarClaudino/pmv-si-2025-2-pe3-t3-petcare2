@@ -161,7 +161,7 @@ export const ReservationRepo = {
   changeStatus(
     id: UUID,
     status: ReservationStatus,
-    reason?: string,
+    reason?: string
   ): Reservation | undefined {
     const reservations = this.list();
     const index = reservations.findIndex((r) => r.id === id);
@@ -218,7 +218,7 @@ export function seedDemoData(): void {
     email: "ana@example.com",
     phone: "31999990000",
     role: "hotel",
-    password: "123456"
+    password: "123456",
   });
 
   const pet = PetRepo.create({
@@ -227,12 +227,15 @@ export function seedDemoData(): void {
     species: "Cachorro",
     age: 3,
     obs: "Muito dócil",
+    url: "",
   });
 
   const hotel = HotelRepo.create({
     name: "Hotel PetCare BH",
     address: "Av. Central, 100 - Belo Horizonte",
     capacity: 5,
+    description: "",
+    url: "",
   });
 
   ReservationRepo.create({
